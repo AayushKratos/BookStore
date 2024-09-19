@@ -20,6 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> books = [];
   List<Map<String, dynamic>> wishlist = [];
+  List<Map<String, dynamic>> cartItems = [];
 
   Future<void> fetchBooks() async {
     final String apiUrl =
@@ -31,8 +32,10 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         print("Successful............................................");
         setState(() {
-          final List<dynamic> decodedData = json.decode(response.body)['result'];
-          books = decodedData.map((item) => item as Map<String, dynamic>).toList();
+          final List<dynamic> decodedData =
+              json.decode(response.body)['result'];
+          books =
+              decodedData.map((item) => item as Map<String, dynamic>).toList();
         });
       } else {
         throw Exception('Failed to load books');
@@ -49,7 +52,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void addToWishlist(Map<String, dynamic> book) async {
-    final String bookId = book['_id']; 
+    final String bookId = book['_id'];
 
     try {
       final String apiUrl =
@@ -75,7 +78,8 @@ class _HomePageState extends State<HomePage> {
           }
         });
       } else {
-        final errorMessage = json.decode(response.body)['message'] ?? 'Failed to add item to wishlist';
+        final errorMessage = json.decode(response.body)['message'] ??
+            'Failed to add item to wishlist';
         print('Failed to add item to wishlist: $errorMessage');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add to Wishlist')),
@@ -88,6 +92,96 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
+
+   void fetchWishlist() async {
+    final String apiUrl =
+        'https://bookstore.incubation.bridgelabz.com/bookstore_user/get_wishlist_items';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          wishlist = List<Map<String, dynamic>>.from(data['result']);
+        });
+        print("Successfully fetched wishlist items.");
+      } else {
+        throw Exception('Failed to load wishlist items');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> fetchCartItems() async {
+    final String apiUrl =
+        'https://bookstore.incubation.bridgelabz.com/bookstore_user/get_cart_items';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final List<dynamic> decodedData =
+              json.decode(response.body)['result'];
+          cartItems =
+              decodedData.map((item) => item as Map<String, dynamic>).toList();
+        });
+        print("Cart items fetched successfully");
+      } else {
+        throw Exception('Failed to load cart items');
+      }
+    } catch (e) {
+      print('Error fetching cart items: $e');
+    }
+
+    @override
+    void initState() {
+      super.initState();
+      fetchBooks();
+      fetchCartItems(); // Fetch cart items
+    }
+  }
+
+  void addTocart(String bookId) async {
+  final String apiUrl =
+      'https://bookstore.incubation.bridgelabz.com/bookstore_user/add_cart_list_item';
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: json.encode({'bookId': bookId}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print("Successfully added item to cart.");
+      fetchCartItems(); 
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Added to cart')),
+      );
+    } else {
+      print('Failed to add item to cart: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add to cart')),
+      );
+    }
+  } catch (e) {
+    print('Error adding item to cart: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error adding to cart')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +203,16 @@ class _HomePageState extends State<HomePage> {
             ),
             IconButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SearchPage(books: books)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SearchPage(books: books)));
                 },
                 icon: const Icon(Icons.search)),
             IconButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => CartPage()));
+                      MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems,)));
                 },
                 icon: const Icon(Icons.shopping_cart)),
           ],
@@ -185,11 +281,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            final cart = Provider.of<CartModel>(context, listen: false);
-                            cart.addItem(book);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Added to Cart')),
-                            );
+                            addToWishlist(book);
                           },
                           child: Text('Add to Bag'),
                         ),

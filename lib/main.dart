@@ -1,13 +1,7 @@
-import 'package:bookstore/model/Cart_model.dart';
 import 'package:bookstore/pages/home.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => CartModel(),
-    child: MyApp(),
-  ));
+void main() {MyApp();
 }
 
 class MyApp extends StatelessWidget {
