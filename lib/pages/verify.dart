@@ -47,7 +47,7 @@ class _VerificationPageState extends State<VerificationPage> {
         Uri.parse(apiUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',  // Pass the token in the header
+          'X-access-token': 'Bearer $token',  // Pass the token in the header
         },
         body: jsonEncode(verificationData),
       );
