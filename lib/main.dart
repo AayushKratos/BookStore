@@ -1,4 +1,4 @@
-import 'package:bookstore/pages/home.dart';
+import 'package:bookstore/pages/login.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Book Store',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }
