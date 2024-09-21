@@ -1,7 +1,8 @@
 import 'package:bookstore/pages/home.dart';
 import 'package:flutter/material.dart';
 
-void main() {MyApp();
+void main() {
+  const MyApp();
 }
 
 class MyApp extends StatelessWidget {
@@ -12,9 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Book Store',
-      theme: ThemeData(
-        primarySwatch: Colors.blue
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: HomePage(),
     );
   }

@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:bookstore/model/Cart_model.dart';
 import 'package:bookstore/pages/cart.dart';
 import 'package:bookstore/pages/search.dart';
 import 'package:bookstore/pages/view.dart';
 import 'package:bookstore/pages/wishlist.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
